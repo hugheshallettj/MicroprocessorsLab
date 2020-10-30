@@ -27,3 +27,4 @@ test:
 	goto 	0x0		    ; Re-run program from start
 
 	end	main
+	hello
