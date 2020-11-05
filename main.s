@@ -20,25 +20,37 @@ start:
 	bsf	REPU		    ; PORT e PULLUPS on
 	movlb	0x00		    ; set bsr back to Bank 0
 	
+loop:	
+	call 	dataout1
 	
-	bra 	data
+	movlw	01B
+	movwf	LATD, A
 	
-	movlw	0xff
-	movwf	0x20, A		    ; store 255 in FR 0x20 for delay loop
-	
-	bra	delay
-	
-	setf	TRISE
+	goto	loop
 
 delay:	
 	decfsz	0x20, f, A	    ; decrement value in 0x20 until 0
-	tstfsz	0x20, A		    ; test f, skip if zero
 	bra	delay
 	return
 	
-data:	
+dataout1:	
+	clrf	TRISE
 	movlw	0xAA
 	movwf	LATE, A		    ; Storing byte 0xAA in lat E
+	call	clkpls1
+	setf	TRISE
+	return
 
-
+clkpls1:
+	movlw	10B
+	movwf	LATD, A
+	nop
+	nop
+	nop
+	nop
+	movlw	11B
+	movwf	LATD, A
+	
+	return
+	
 	end	main
