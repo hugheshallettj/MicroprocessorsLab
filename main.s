@@ -7,19 +7,20 @@ psect code, abs
 
 main:
     org 0x0
-    goto    start
+    goto    keypad_setup
     org     0x100     ; Main code starts here at address 0x100
  
-start:   
+keypad_setup:   
     clrf    TRISH     ; sets PORTH as output
     banksel PADCFG1     ; selects bank to the location of PADCFG1
     bsf     REPU     ; PORT e PULLUPS on
 
     movlb   0x00     ; set bsr back to Bank 0
 
-    clrf    TRISE     ; sets PORTE as output
+    clrf    LATE     ; sets PORTE as output
+    bra	    keypad_loading
 
-
+keypad_loading:
     movlw   0x0f     ; 00001111 binary for first four bits as input
 
     movwf   TRISE, A     ; set tristate D value to be 1's for 1st four pins therefore input pins
@@ -36,15 +37,11 @@ start:
 
     movlw   0x18     ; delay length
     movwf   0x10, A    
-    call    delay    
+    call    delay   
 
     movff   PORTE, 0x40    
 
     movlw   0x0
-
-    movwf   TRISH, A     ; PORT H all output
-
-    clrf    LATH, A     ; clears the output
 
     bra     loaddata
 
@@ -55,7 +52,7 @@ loaddata:
     movwf   0x50, A
     movff   0x50, PORTH, A
 
-    goto    start     ; Re-run program from start
+    goto    keypad_loading     ; Re-run program from start
 
 delay:
 
